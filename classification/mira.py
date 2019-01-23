@@ -61,7 +61,30 @@ class MiraClassifier:
         representing a vector of values.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        data = trainingData[i]
+        labels = trainingLabels[i]
+        classifyer = self.classify([data])[0]
+        if (labels != classifyer):
+            self.weights[labels] += data
+            self.weights[classifyer] -= data
+
+        #feature = trainingData[i]
+        #actual = trainingLabels[i]
+        #result = self.classify([feature])[0]
+        #if (actual != result):
+        #   step = min(c, ((self.weights[result] - self.weights[actual]) * feature + 1.0) / (feature * feature * 2) )
+        #   self.weights[actual] = self.weights[actual] + {k: v * step for k, v in feature.items()}
+        #   self.weights[result] = self.weights[result] - {k: v * step for k, v in feature.items()}
+        #
+        ## validation
+        #print "Validate for c=", c
+        #diffs = map(lambda (result, actual): abs(result - actual), zip(self.classify(validationData), validationLabels))
+        #accuracy = sum(diffs)
+        #if accuracy < bestAcc:
+        #   bestAcc = accuracy
+        #   bestWeights = self.weights
+        #
+        #self.weights = bestWeights
 
     def classify(self, data ):
         """
