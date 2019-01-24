@@ -60,31 +60,35 @@ class MiraClassifier:
         datum is a counter from features to values for those features
         representing a vector of values.
         """
-        "*** YOUR CODE HERE ***"
-        data = trainingData[i]
-        labels = trainingLabels[i]
-        classifyer = self.classify([data])[0]
-        if (labels != classifyer):
-            self.weights[labels] += data
-            self.weights[classifyer] -= data
+        weight = self.weights
+        weightprime = {}
+        maxi     = float("inf")
+        for c in Cgrid:
+            self.weights = weight.copy()
+            for iteration in range(self.max_iterations):
+                print "Starting iteration ", iteration, "..."
+                for i in range(len(trainingData)):
+                    data = trainingData[i]
+                    labels = trainingLabels[i]
+                    classifyer = self.classify([data])[0]
+                    if (labels != classifyer):
+                        #weightClassifyer = self.weights[classifyer]
+                        #weightLabels = self.weights[labels]
+                        #dataPower = (data ** 2)
+                        action = min(c, ((self.weights[classifyer] - self.weights[labels]) * data + 1.0) / (data * data * 2 ) ) #data ** 2 *2 apparently doesnt work, so does naming some units so it's easier for me to understand
+                        self.weights[labels] = self.weights[labels] + {x: y * action for x, y in data.items()}
+                        self.weights[classifyer] = self.weights[classifyer] - {x: y * action for x, y in data.items()}
 
-        #feature = trainingData[i]
-        #actual = trainingLabels[i]
-        #result = self.classify([feature])[0]
-        #if (actual != result):
-        #   step = min(c, ((self.weights[result] - self.weights[actual]) * feature + 1.0) / (feature * feature * 2) )
-        #   self.weights[actual] = self.weights[actual] + {k: v * step for k, v in feature.items()}
-        #   self.weights[result] = self.weights[result] - {k: v * step for k, v in feature.items()}
-        #
-        ## validation
-        #print "Validate for c=", c
-        #diffs = map(lambda (result, actual): abs(result - actual), zip(self.classify(validationData), validationLabels))
-        #accuracy = sum(diffs)
-        #if accuracy < bestAcc:
-        #   bestAcc = accuracy
-        #   bestWeights = self.weights
-        #
-        #self.weights = bestWeights
+            print "Validate for c=", c
+            #zipper = (self.classify(validationData), validationLabels)
+            #absolute = abs(classifyer - labels)
+            #tussenresultaat = map(lambda (result, actual): abs(classifyer - labels), zipper)
+            precision = sum( map(lambda (classifyer, labels): abs(classifyer - labels), zip(self.classify(validationData), validationLabels)) )
+            if precision < maxi:
+                maxi = precision
+                weightprime = self.weights
+
+        self.weights = weightprime
 
     def classify(self, data ):
         """
